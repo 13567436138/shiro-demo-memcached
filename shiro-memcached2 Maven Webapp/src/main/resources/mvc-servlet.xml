@@ -103,14 +103,14 @@
     </bean>
     
     <!-- 配置Freemarker属性文件路径 -->  
-    <bean id="freemarkerConfiguration"  
+    <!-- <bean id="freemarkerConfiguration"  
         class="org.springframework.beans.factory.config.PropertiesFactoryBean">  
         <property name="location" value="classpath:freemarker.properties" />  
-    </bean>  
+    </bean>  --> 
     <!-- 配置freeMarker模板加载地址 -->  
-    <bean id="freemarkerConfig"  
+    <!-- <bean id="freemarkerConfig"  
         class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
-        <!-- 视图解析器在/WEB-INF/ftl/路径下扫描视图文件 -->  
+        视图解析器在/WEB-INF/ftl/路径下扫描视图文件  
         <property name="templateLoaderPath" value="/WEB-INF/ftl/" />  
         <property name="freemarkerSettings" ref="freemarkerConfiguration" /> 
         <property name="freemarkerVariables">  
@@ -119,14 +119,14 @@
             </map>  
         </property>  
          
-    </bean>  
-    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />  
+    </bean>  --> 
+    <!-- <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape" />   -->
     <!-- 配置freeMarker视图解析器 -->  
-    <bean id="freemakerViewResolver"  
+    <!-- <bean id="freemakerViewResolver"  
         class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">  
         <property name="viewClass"  
             value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />  
-        <!-- 扫描路径內所有以ftl結尾的文件 -->  
+        扫描路径內所有以ftl結尾的文件  
         <property name="viewNames">  
             <array>  
                 <value>*.ftl</value>  
@@ -138,10 +138,28 @@
         <property name="exposeSessionAttributes" value="true" />  
         <property name="exposeSpringMacroHelpers" value="true" />  
         <property name="requestContextAttribute" value="request" />  
-        <!-- 给视图解析器配置优先級，你可以给之前jsp视图解析器的值配为2 -->  
+        给视图解析器配置优先級，你可以给之前jsp视图解析器的值配为2  
         <property name="order" value="1" />  
-    </bean>  
-
+    </bean>  --> 
+	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+	    <!-- velocity配置文件路径  或者直接用velocityProperties属性 -->
+	    <property name="configLocation" value="classpath:velocity.properties"/>
+	    <!-- velocity模板路径 -->
+	    <property name="resourceLoaderPath" value="/WEB-INF/velocity/"/>
+	</bean>
+	<!-- velocity视图解析器 -->
+	<bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+	    <property name="order" value="1"/>
+	    <property name="contentType" value="text/html;charset=UTF-8"/>
+	    <property name="cache" value="true"/>
+	    <property name="suffix" value=".vm"/>
+	    <property name="layoutUrl" value="layout/layout.vm"/>
+	    <property name="exposeSpringMacroHelpers" value="true" /><!--是否使用spring对宏定义的支持-->
+	    <property name="exposeSessionAttributes" value="true" /><!--是否开放request属性-->
+	    <property name="requestContextAttribute" value="request"/><!--request属性引用名称-->
+	    <property name="dateToolAttribute" value="dateTool"/>
+	    <property name="numberToolAttribute" value="numberTool"/>
+	</bean>
     <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
         <property name="config">
             <bean class="com.google.code.kaptcha.util.Config">

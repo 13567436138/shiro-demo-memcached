@@ -55,8 +55,8 @@ http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
     <!-- 扫描basePackage下所有以@MyBatisDao注解的接口 -->
     <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-        <property name="basePackage" value="com.mark.demo.shiro.mapper"/>
-        <property name="annotationClass" value="com.mark.demo.shiro.anno.MyBatisDao"/>
+        <property name="basePackage" value="com.mark.demo.shiro_memched.mapper"/>
+        <property name="annotationClass" value="com.mark.demo.shiro_memched.anno.MyBatisDao"/>
     </bean>
 
     <!-- 事务配置 -->
