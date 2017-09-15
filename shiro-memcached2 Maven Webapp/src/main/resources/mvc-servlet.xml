@@ -30,7 +30,7 @@
     <mvc:resources mapping="/fonts/**" location="/fonts/" cache-period="31536000"/>
 
     <!-- 自动包扫描，只扫描Controller注解 -->
-    <context:component-scan base-package="com.mark.demo.shiro.controller" use-default-filters="false">
+    <context:component-scan base-package="com.mark.demo.shiro_memched.controller" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
@@ -253,5 +253,5 @@
         </property>
     </bean> -->
     
-    
+    <bean id="springUtils" class="com.mark.demo.shiro_memched.utils.SpringUtils"></bean>
 </beans>

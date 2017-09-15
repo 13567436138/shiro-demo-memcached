@@ -59,7 +59,7 @@
 	</filter-mapping>
 	<filter>
 		<filter-name>sessionFilter</filter-name>
-		<filter-class>com.mark.demo.dfs.filter.SessionFilter</filter-class>
+		<filter-class>com.mark.demo.shiro_memched.filter.SessionFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>sessionFilter</filter-name>
@@ -67,7 +67,7 @@
 	</filter-mapping>
 	<filter>
 		<filter-name>csrfFilter</filter-name>
-		<filter-class>com.mark.demo.dfs.filter.CSRFGenerateFilter</filter-class>
+		<filter-class>com.mark.demo.shiro_memched.filter.CSRFGenerateFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>csrfFilter</filter-name>

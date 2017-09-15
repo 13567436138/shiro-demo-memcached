@@ -28,7 +28,7 @@ public class MemcachedUtils {
     private static XMemcachedClient memcachedClient;  
     
     static{
-    	memcachedClient=SpringUtils.getBean(XMemcachedClient.class);
+    	memcachedClient=SpringUtils.getBean("xmemcachedClient");
     }
   
     private MemcachedUtils()  
@@ -140,8 +140,7 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            // 记录Memcached日志  
-            MemcachedLog.writeLog("Memcached expire方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage());
         }  
         return flag;  
     }
@@ -164,9 +163,7 @@ public class MemcachedUtils {
             flag = memcachedClient.set(key, expire, value);
         }  
         catch (Exception e)  
-        {  
-            // 记录Memcached日志  
-            MemcachedLog.writeLog("Memcached set方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        {  logger.error(e.getMessage());
         }  
         return flag;  
     }  
@@ -221,8 +218,7 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            // 记录Memcached日志  
-            MemcachedLog.writeLog("Memcached add方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage());
         }  
         return flag;  
     }  
@@ -277,7 +273,7 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached replace方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage()); 
         }  
         return flag;  
     }  
@@ -298,7 +294,7 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached get方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage());
         }  
         return obj;  
     }  
@@ -347,7 +343,7 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached delete方法报错，key值：" + key + "\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage()); 
         }  
         return flag;  
     }  
@@ -367,7 +363,7 @@ public class MemcachedUtils {
         catch (Exception e)  
         {  
         	flag=false;
-            MemcachedLog.writeLog("Memcached flashAll方法报错\r\n" + exceptionWrite(e));  
+        	logger.error(e.getMessage());
         }  
         return flag;  
     }  
@@ -377,7 +373,7 @@ public class MemcachedUtils {
      *  
      * @param e 
      * @return 
-     */  
+     *//*  
     private static String exceptionWrite(Exception e)  
     {  
         StringWriter sw = new StringWriter();  
@@ -387,12 +383,12 @@ public class MemcachedUtils {
         return sw.toString();  
     }  
   
-    /** 
+    *//** 
      *  
      * @ClassName: MemcachedLog 
      * @Description: Memcached日志记录 
      *  
-     */  
+     *//*  
     private static class MemcachedLog  
     {  
         private final static String MEMCACHED_LOG = "D:\\memcached.log";  
@@ -403,9 +399,9 @@ public class MemcachedUtils {
         private final static RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();  
         private final static String PID = runtime.getName();  
   
-        /** 
+        *//** 
          * 初始化写入流 
-         */  
+         *//*  
         static  
         {  
             try  
@@ -428,12 +424,12 @@ public class MemcachedUtils {
             }  
         }  
   
-        /** 
+        *//** 
          * 写入日志信息 
          *  
          * @param content 
          *            日志内容 
-         */  
+         *//*  
         public static void writeLog(String content)  
         {  
             try  
@@ -450,9 +446,9 @@ public class MemcachedUtils {
             }  
         }  
   
-        /** 
+        *//** 
          * 关闭流 
-         */  
+         *//*  
         private static void closeLogStream()  
         {  
             try  
@@ -465,5 +461,5 @@ public class MemcachedUtils {
                 logger.error("memcached 日志对象关闭失败", e);  
             }  
         }  
-    }  
+    }  */
 }

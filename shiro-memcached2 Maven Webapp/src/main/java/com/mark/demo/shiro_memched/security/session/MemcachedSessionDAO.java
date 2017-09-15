@@ -32,6 +32,7 @@ private static final Logger logger         = LoggerFactory.getLogger(MemcachedSe
     public static final String  SESSION_GROUPS = "memcached_shiro_session_group";
     
     public static final String  SESSION_PREFIX = "session_";
+    public static final String  SESSION_FIELD_PREFIX = "field_";
     
     @Override
     public void update(Session session) throws UnknownSessionException
@@ -49,7 +50,7 @@ private static final Logger logger         = LoggerFactory.getLogger(MemcachedSe
             
         String principalId = principal != null ? principal.getId()+"": StringUtils.EMPTY;
         //JedisUtils.setMapField(SESSION_GROUPS, key, principalId + "|" + session.getTimeout() + "|" + session.getLastAccessTime().getTime());
-        MemcachedUtils.setGroupField(SESSION_GROUPS, key, principalId + "|" + session.getTimeout() + "|" + session.getLastAccessTime().getTime());
+        MemcachedUtils.setGroupField(SESSION_GROUPS, SESSION_FIELD_PREFIX+key, principalId + "|" + session.getTimeout() + "|" + session.getLastAccessTime().getTime());
     }
     
     /**
@@ -78,7 +79,8 @@ private static final Logger logger         = LoggerFactory.getLogger(MemcachedSe
         String key = String.valueOf(SESSION_PREFIX + session.getId());
         //JedisUtils.removeMapField(SESSION_GROUPS,key);
         //JedisUtils.del(key);
-        MemcachedUtils.delGroupField(SESSION_GROUPS, key);
+        MemcachedUtils.delGroupField(SESSION_GROUPS, SESSION_FIELD_PREFIX+key);
+        MemcachedUtils.delete(key);
         
     }
     

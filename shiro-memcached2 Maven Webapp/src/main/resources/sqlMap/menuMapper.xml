@@ -10,7 +10,7 @@
     	<result column="order" property="order"/>
     </resultMap>
     <resultMap type="Menu" id="menuWithParentMap" extends="menuMap">
-    	<association property="parent" javaType="Menu" column="pid">
+    	<association property="parent" javaType="com.mark.demo.shiro_memched.entity.Menu" column="pid">
     		<result column="pid" property="id"/>
 	    	<result column="p_menuName" property="menuName"/>
 	    	<result column="p_menuDesc" property="menuDesc"/>
