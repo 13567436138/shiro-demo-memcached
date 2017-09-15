@@ -7,18 +7,16 @@
     <description>Jedis Configuration</description>
 
     <!-- 加载配置属性文件 -->
-    <context:property-placeholder ignore-unresolvable="true" location="classpath:redis.properties"/>
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:memcache.properties"/>
 
     <bean name="xmemcachedClient"
 		class="net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean">
 		<property name="servers">
-			<value>host1:port1 host2:port2 host3:port3</value>
+			<value>${hosts}</value>
 		</property>
 		<property name="weights">
 		<list>
 			<value>1</value>
-			<value>2</value>
-			<value>3</value>
 		</list>
 		</property>
 		<property name="connectionPoolSize">

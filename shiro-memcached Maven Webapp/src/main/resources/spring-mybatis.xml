@@ -83,7 +83,7 @@ http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
 
     <!-- 第一个*代表所有的返回值类型，第二个*代表所有的类，第三个*代表类所有方法，最后一个..代表所有的参数 -->
     <aop:config>
-        <aop:pointcut id="transactionPointcut" expression="execution(* com.mark.demo.shiro.service..*ServiceImpl.*(..))"/>
+        <aop:pointcut id="transactionPointcut" expression="execution(* com.mark.demo.shiro_memched.service..*ServiceImpl.*(..))"/>
         <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice"/>
     </aop:config>
 

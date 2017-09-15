@@ -13,10 +13,10 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.parsing.XPathParser;
 
-import com.mark.demo.shiro_memched.utils.JedisUtils;
+import com.mark.demo.shiro_memched.utils.MemcachedUtils;
 import com.mark.demo.shiro_memched.utils.PropertiesLoader;
 
-public class RedisCachingManagerImpl implements RedisCachingManager{
+public class MemcachedCachingManagerImpl implements MemcachedCachingManager{
 	
 	//每一个statementId 更新依赖的statementId集合
 	private Map<String,Set<String>> observers=new ConcurrentHashMap<String,Set<String>>();
@@ -24,15 +24,15 @@ public class RedisCachingManagerImpl implements RedisCachingManager{
 	private boolean initialized = false;
 	private boolean cacheEnabled = false;
 	
-	private volatile static RedisCachingManagerImpl enhancedCacheManager;
+	private volatile static MemcachedCachingManagerImpl enhancedCacheManager;
 
-	private RedisCachingManagerImpl(){}
-	public static RedisCachingManagerImpl getInstance()
+	private MemcachedCachingManagerImpl(){}
+	public static MemcachedCachingManagerImpl getInstance()
 	{
 		if(enhancedCacheManager==null){
-			synchronized (RedisCachingManagerImpl.class) {
+			synchronized (MemcachedCachingManagerImpl.class) {
 				if(enhancedCacheManager==null){
-					enhancedCacheManager=new RedisCachingManagerImpl();
+					enhancedCacheManager=new MemcachedCachingManagerImpl();
 				}
 			}
 		}
@@ -45,7 +45,7 @@ public class RedisCachingManagerImpl implements RedisCachingManager{
 			Set<String> relatedStatements = observers.get(observable);
 			for(String statementId:relatedStatements)
 			{
-				JedisUtils.removeMapField(MyBatisRedisCache.mybatis_cache_prefix, statementId);
+				MemcachedUtils.delGroup(MybatisMemcacheCache.mybatis_cache_prefix+statementId);
 			}
 		}
 	}

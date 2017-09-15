@@ -28,9 +28,9 @@ import org.apache.ibatis.session.RowBounds;
 		@Signature(args = {boolean.class}, method = "rollback", type = Executor.class),
 		@Signature(args = {boolean.class}, method = "close", type = Executor.class)
 })
-public  class RedisCachingExecutor implements Interceptor {
+public  class MemcachedCachingExecutor implements Interceptor {
 	private Set<String>   updateStatementOnCommit = new HashSet<String>();
-	RedisCachingManager cachingManager = RedisCachingManagerImpl.getInstance();
+	MemcachedCachingManager cachingManager = MemcachedCachingManagerImpl.getInstance();
 	
 	public Object intercept(Invocation invocation) throws Throwable {
 		String name = invocation.getMethod().getName();

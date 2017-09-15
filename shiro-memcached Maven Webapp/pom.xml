@@ -223,7 +223,11 @@
 		    <artifactId>xmemcached</artifactId>
 		    <version>2.3.2</version>
 		</dependency>
-		
+		<dependency>
+		    <groupId>com.github.tobato</groupId>
+		    <artifactId>fastdfs-client</artifactId>
+		    <version>1.25.4-RELEASE</version>
+		</dependency>
   </dependencies>
   <build>
     <finalName>shiro-memcached</finalName>
@@ -299,9 +303,7 @@
   				<activeByDefault>true</activeByDefault>
   			</activation>
   			<properties>
-  				<p.redis.master.host>192.168.198.128</p.redis.master.host>
-  				<p.redis.master.port>7000</p.redis.master.port>
-  				<p.redis.master.pass>none</p.redis.master.pass>
+  				<p.memcache.master.hosts>192.168.198.128:11211</p.memcache.master.hosts>
   				<p.jdbc.driver>com.mysql.jdbc.Driver</p.jdbc.driver>
   				<p.master.jdbc.url>jdbc:mysql://192.168.198.129:3306/shiro?failOverReadOnly=false&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;allowMultiQueries=true</p.master.jdbc.url>
   				<p.master.jdbc.username>root</p.master.jdbc.username>

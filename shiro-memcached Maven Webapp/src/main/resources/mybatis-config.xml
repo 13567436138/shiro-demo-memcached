@@ -42,13 +42,13 @@
     </settings>
 	
 	<typeAliases>
-	     <package name="com.mark.demo.shiro.entity" />
+	     <package name="com.mark.demo.shiro_memched.entity" />
 	</typeAliases>
 	
     <!-- 插件配置 -->
     <plugins>
-        <plugin interceptor="com.mark.demo.shiro.mybatis.PaginationInterceptor"/>
-        <plugin interceptor="com.mark.demo.shiro.mybatis.cache.RedisCachingExecutor">
+        <plugin interceptor="com.mark.demo.shiro_memched.mybatis.PaginationInterceptor"/>
+        <plugin interceptor="com.mark.demo.shiro_memched.mybatis.cache.MemcachedCachingExecutor">
             <property name="dependency" value="dependencys.xml"/>
             <property name="cacheEnabled" value="true"/>
         </plugin>

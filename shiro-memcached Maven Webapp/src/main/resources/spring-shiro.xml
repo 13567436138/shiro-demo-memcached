@@ -7,39 +7,6 @@
 
     <description>Shiro安全配置</description>
 	<context:property-placeholder ignore-unresolvable="true" location="classpath:cookie.properties"/>
-    
-    <!-- Shiro权限过滤过滤器定义 -->
-    <bean name="shiroFilterChainDefinitions" class="java.lang.String">
-        <constructor-arg>
-            <value>
-                /error/** = anon,exec
-                /client/** = anon,exec
-                /styles/** = anon,exec
-                /images/** = anon,exec
-                /scripts/** = anon,exec
-                /pay/back/** = anon,exec
-                /video/** = anon,exec
-                /upload/** = anon,exec
-                /uploads/** = anon,exec
-                /fonts/** = anon,exec
-                /getAuthPrice/** = anon,exec
-                /common/login/submitlogin=authc,exec
-                /common/login/** = anon,exec
-                /common/showImg/** = anon,exec
-                /common/showFile/** = anon,exec
-                /brand/brandImage/** = anon,exec
-                /common/orderPayCallback/** = anon,exec
-                /common/dealerShoper/** = anon,exec
-                /common/crmLogin/** = anon,exec
-                /common/register/** = anon,exec
-                /common/suggestion/** = anon,exec
-                /common/forgotpass/** = anon,exec
-                /menu/** = authc,exec
-                /brand/** = authc,exec
-                /common/** = authc,exec
-            </value>
-        </constructor-arg>
-    </bean>
 
     <!-- 安全认证过滤器 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
@@ -50,10 +17,10 @@
         <property name="filters">
             <map>
                 <entry key="exec">
-                    <bean class="com.mark.demo.shiro.security.filter.SimpleExecutiveFilter"/>
+                    <bean class="com.mark.demo.shiro_memched.security.filter.SimpleExecutiveFilter"/>
                 </entry>
                 <entry key="authc">
-                    <bean class="com.mark.demo.shiro.security.filter.AuthenticationFilter">
+                    <bean class="com.mark.demo.shiro_memched.security.filter.AuthenticationFilter">
                         <property name="rememberMeParam" value="rememberMe"/>
                     </bean>
                 </entry>
@@ -82,23 +49,23 @@
     </bean>
 
     <!-- 定义授权缓存管理器 -->
-    <bean id="shiroCacheManager" class="com.mark.demo.shiro.security.cache.RedisCacheManager"/>
+    <bean id="shiroCacheManager" class="com.mark.demo.shiro_memched.security.cache.MemcachedCacheManager"/>
     <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
     <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
     <!-- SHIRO 认证匹配 -->
-    <bean id="userCredentialsMatcher" class="com.mark.demo.shiro.security.UserCredentialsMatcher"/>
+    <bean id="userCredentialsMatcher" class="com.mark.demo.shiro_memched.security.UserCredentialsMatcher"/>
 
     <!-- 系统安全认证 -->
-    <bean id="userAuthorizingRealm" class="com.mark.demo.shiro.security.MysqlRealm">
+    <bean id="userAuthorizingRealm" class="com.mark.demo.shiro_memched.security.MysqlRealm">
         <property name="credentialsMatcher" ref="userCredentialsMatcher"/>
         <property name="sessionDAO" ref="sessionDAO"/>
         <property name="userMapper" ref="userMapper"></property>
     </bean>
 
     <!-- 自定义会话 -->
-    <bean id="sessionDAO" class="com.mark.demo.shiro.security.session.RedisSessionDAO">
+    <bean id="sessionDAO" class="com.mark.demo.shiro_memched.security.session.MemcachedSessionDAO">
         <property name="sessionIdGenerator">
-            <bean class="com.mark.demo.shiro.security.utils.IdGen"/>
+            <bean class="com.mark.demo.shiro_memched.security.utils.IdGen"/>
         </property>
     </bean>
 

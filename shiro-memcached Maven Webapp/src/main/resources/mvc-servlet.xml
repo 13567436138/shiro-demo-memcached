@@ -47,7 +47,7 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/client/**"/>
-            <bean class="com.mark.demo.shiro.interceptor.ClientApiInterceptor"/>
+            <bean class="com.mark.demo.shiro_memched.interceptor.ClientApiInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
@@ -55,21 +55,21 @@
             <mvc:exclude-mapping path="/css/**"/>
             <mvc:exclude-mapping path="/common/login/**"/>
             <mvc:exclude-mapping path="/client/**"/>
-            <bean class="com.mark.demo.shiro.interceptor.CSRFHandlerInterceptor">
+            <bean class="com.mark.demo.shiro_memched.interceptor.CSRFHandlerInterceptor">
                 <property name="csrfTokenManager" ref="csrfTokenManager"/>
             </bean>
         </mvc:interceptor>
     </mvc:interceptors>
 
-	<bean id="redisSessionManager" class="com.mark.demo.shiro.session.RedisSessionManager"/>
+	<bean id="redisSessionManager" class="com.mark.demo.shiro_memched.session.RedisSessionManager"/>
 	
     <!-- csrf 令牌管理 -->
-    <bean id="csrfTokenManager" class="com.mark.demo.shiro.interceptor.CSRFTokenManager">
+    <bean id="csrfTokenManager" class="com.mark.demo.shiro_memched.interceptor.CSRFTokenManager">
         <property name="redisSessionManager" ref="redisSessionManager"/>
     </bean>
 
     <!-- CSRF 表单中加入隐藏CSRF token域 -->
-    <bean name="requestDataValueProcessor" class="com.mark.demo.shiro.interceptor.CSRFRequestDataValueProcessor">
+    <bean name="requestDataValueProcessor" class="com.mark.demo.shiro_memched.interceptor.CSRFRequestDataValueProcessor">
         <property name="csrfTokenManager" ref="csrfTokenManager"/>
     </bean>
 
@@ -166,13 +166,13 @@
     </bean>
 
     <!-- 参数绑定、验证失败处理 -->
-    <bean class="com.mark.demo.shiro.exception.handler.BindingExcetionResolver">
+    <bean class="com.mark.demo.shiro_memched.exception.handler.BindingExcetionResolver">
         <property name="jsonMessageConverter" ref="fastJsonHttpMessageConverter"/>
         <property name="order" value="1"/>
     </bean>
 
     <!-- 业务异常处理 -->
-    <bean class="com.mark.demo.shiro.exception.handler.BusinessExceptionResolver">
+    <bean class="com.mark.demo.shiro_memched.exception.handler.BusinessExceptionResolver">
         <property name="jsonMessageConverter" ref="fastJsonHttpMessageConverter"/>
         <property name="order" value="2"/>
     </bean>

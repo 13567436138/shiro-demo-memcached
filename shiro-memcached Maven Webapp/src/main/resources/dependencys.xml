@@ -5,6 +5,8 @@
         <statement id="com.mark.demo.shiro.mapper.MenuMapper.updateMenu">
         	<observer id="com.mark.demo.shiro.mapper.UserMapper.getMenuTopLever"/>
         </statement>
-
+		<statement id="com.mark.demo.dfs.mapper.FastDFSFileMapper.insert">
+        	<observer id="com.mark.demo.dfs.mybatis.cache.MyBatisRedisCache.findList"/>
+        </statement>
     </statements>
 </dependencies>

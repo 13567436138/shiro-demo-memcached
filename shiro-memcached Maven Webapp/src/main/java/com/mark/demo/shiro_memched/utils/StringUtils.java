@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -577,5 +579,19 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         }
         result.append(val.substring(1));
         return result.toString();
+    }
+    
+    
+    public static int isImage(String ext){
+    	Set<String> imageExt=new HashSet<String>();
+    	imageExt.add("png");
+    	imageExt.add("jpg");
+    	imageExt.add("gif");
+    	imageExt.add("ico");
+    	if(imageExt.contains(ext)){
+    		return 2;
+    	}else{
+    		return 1;
+    	}
     }
 }

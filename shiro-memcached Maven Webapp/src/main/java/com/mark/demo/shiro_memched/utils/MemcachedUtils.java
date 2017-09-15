@@ -9,6 +9,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +20,7 @@ import net.rubyeye.xmemcached.XMemcachedClient;;
 
 /*
 *hxp(hxpwangyi@126.com)
-*2017Äê9ÔÂ12ÈÕ
+*2017å¹´9æœˆ12æ—¥
 *
 */
 public class MemcachedUtils {
@@ -33,12 +36,12 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * Ïò»º´æÌí¼ÓĞÂµÄ¼üÖµ¶Ô¡£Èç¹û¼üÒÑ¾­´æÔÚ£¬ÔòÖ®Ç°µÄÖµ½«±»Ìæ»»¡£ 
+     * å‘ç¼“å­˜æ·»åŠ æ–°çš„é”®å€¼å¯¹ã€‚å¦‚æœé”®å·²ç»å­˜åœ¨ï¼Œåˆ™ä¹‹å‰çš„å€¼å°†è¢«æ›¿æ¢ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @return 
      */  
     public static boolean set(String key, Object value)  
@@ -47,30 +50,110 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * Ïò»º´æÌí¼ÓĞÂµÄ¼üÖµ¶Ô¡£Èç¹û¼üÒÑ¾­´æÔÚ£¬ÔòÖ®Ç°µÄÖµ½«±»Ìæ»»¡£ 
+     * å‘ç¼“å­˜æ·»åŠ æ–°çš„é”®å€¼å¯¹ã€‚å¦‚æœé”®å·²ç»å­˜åœ¨ï¼Œåˆ™ä¹‹å‰çš„å€¼å°†è¢«æ›¿æ¢ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     public static boolean set(String key, Object value, int expire)  
     {  
         return setExp(key, value, expire);  
     }  
-  
+    /**
+     * æ·»åŠ ä¸€ä¸ªå¥åˆ°åˆ†ç»„
+     * @param groupKey
+     * @param fieldKey
+     * @param value
+     * @return
+     */
+    public static boolean setGroupField(String groupKey,String fieldKey,Object value){
+    	Object groupObj=get(groupKey);
+    	if(groupObj==null){
+    		groupObj=new HashSet<String>();
+    		((HashSet)groupObj).add(fieldKey);
+    		set(groupKey, groupObj);
+    	}else{
+    		((HashSet<String>)groupObj).add(fieldKey);
+    		set(groupKey,groupObj);
+    	}
+    	return set(fieldKey,value);
+    }
+    /**
+     * è·å–åˆ†ç»„é•¿åº¦
+     * @param groupKey
+     * @return
+     */
+    public static int getGroupLen(String groupKey){
+    	Set<String> fields=(Set<String>)MemcachedUtils.get(groupKey);
+    	if(fields==null){
+    		return 0;
+    	}else{
+    		return fields.size();
+    	}
+    }
+    
+    /**
+     * åˆ é™¤ä¸€ä¸ªåˆ†ç»„
+     * @param groupKey
+     * @return
+     */
+    public static boolean delGroup(String groupKey){
+    	Object groupObj=get(groupKey);
+    	Set<String> groupFields=(HashSet<String>)groupObj;
+    	Iterator<String>it=groupFields.iterator();
+    	while(it.hasNext()){
+    		String field=it.next();
+    		delete(field);
+    	}
+    	return delete(groupKey);
+    }
+    
+    /**
+     * åˆ é™¤åˆ†ç»„ä¸­çš„ä¸€ä¸ªå…ƒç´ 
+     * @param groupKey
+     * @param filedKey
+     * @return
+     */
+    public static boolean delGroupField(String groupKey,String filedKey){
+    	Object groupObj=get(groupKey);
+    	Set<String> groupFields=(HashSet<String>)groupObj;
+    	groupFields.remove(filedKey);
+    	set(groupKey,groupFields);
+    	return  delete(filedKey);
+    }
+    /**
+     * è¿‡æœŸä¸€å®šæ—¶é—´
+     * @param key
+     * @param expire
+     * @return
+     */
+    public static boolean expire(String key,Integer expire){
+    	boolean flag = false;  
+    	try  
+        {  
+            flag = memcachedClient.set(key, expire, memcachedClient.get(key));
+        }  
+        catch (Exception e)  
+        {  
+            // è®°å½•Memcachedæ—¥å¿—  
+            MemcachedLog.writeLog("Memcached expireæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
+        }  
+        return flag;  
+    }
     /** 
-     * Ïò»º´æÌí¼ÓĞÂµÄ¼üÖµ¶Ô¡£Èç¹û¼üÒÑ¾­´æÔÚ£¬ÔòÖ®Ç°µÄÖµ½«±»Ìæ»»¡£ 
+     * å‘ç¼“å­˜æ·»åŠ æ–°çš„é”®å€¼å¯¹ã€‚å¦‚æœé”®å·²ç»å­˜åœ¨ï¼Œåˆ™ä¹‹å‰çš„å€¼å°†è¢«æ›¿æ¢ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     private static boolean setExp(String key, Object value, Integer expire)  
@@ -82,19 +165,19 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            // ¼ÇÂ¼MemcachedÈÕÖ¾  
-            MemcachedLog.writeLog("Memcached set·½·¨±¨´í£¬keyÖµ£º" + key + "\r\n" + exceptionWrite(e));  
+            // è®°å½•Memcachedæ—¥å¿—  
+            MemcachedLog.writeLog("Memcached setæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
         }  
         return flag;  
     }  
   
     /** 
-     * ½öµ±»º´æÖĞ²»´æÔÚ¼üÊ±£¬add ÃüÁî²Å»áÏò»º´æÖĞÌí¼ÓÒ»¸ö¼üÖµ¶Ô¡£ 
+     * ä»…å½“ç¼“å­˜ä¸­ä¸å­˜åœ¨é”®æ—¶ï¼Œadd å‘½ä»¤æ‰ä¼šå‘ç¼“å­˜ä¸­æ·»åŠ ä¸€ä¸ªé”®å€¼å¯¹ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @return 
      */  
     public static boolean add(String key, Object value)  
@@ -103,14 +186,14 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * ½öµ±»º´æÖĞ²»´æÔÚ¼üÊ±£¬add ÃüÁî²Å»áÏò»º´æÖĞÌí¼ÓÒ»¸ö¼üÖµ¶Ô¡£ 
+     * ä»…å½“ç¼“å­˜ä¸­ä¸å­˜åœ¨é”®æ—¶ï¼Œadd å‘½ä»¤æ‰ä¼šå‘ç¼“å­˜ä¸­æ·»åŠ ä¸€ä¸ªé”®å€¼å¯¹ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     public static boolean add(String key, Object value, int expire)  
@@ -119,14 +202,14 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * ½öµ±»º´æÖĞ²»´æÔÚ¼üÊ±£¬add ÃüÁî²Å»áÏò»º´æÖĞÌí¼ÓÒ»¸ö¼üÖµ¶Ô¡£ 
+     * ä»…å½“ç¼“å­˜ä¸­ä¸å­˜åœ¨é”®æ—¶ï¼Œadd å‘½ä»¤æ‰ä¼šå‘ç¼“å­˜ä¸­æ·»åŠ ä¸€ä¸ªé”®å€¼å¯¹ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     private static boolean addExp(String key, Object value, int expire)  
@@ -138,19 +221,19 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            // ¼ÇÂ¼MemcachedÈÕÖ¾  
-            MemcachedLog.writeLog("Memcached add·½·¨±¨´í£¬keyÖµ£º" + key + "\r\n" + exceptionWrite(e));  
+            // è®°å½•Memcachedæ—¥å¿—  
+            MemcachedLog.writeLog("Memcached addæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
         }  
         return flag;  
     }  
   
     /** 
-     * ½öµ±¼üÒÑ¾­´æÔÚÊ±£¬replace ÃüÁî²Å»áÌæ»»»º´æÖĞµÄ¼ü¡£ 
+     * ä»…å½“é”®å·²ç»å­˜åœ¨æ—¶ï¼Œreplace å‘½ä»¤æ‰ä¼šæ›¿æ¢ç¼“å­˜ä¸­çš„é”®ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @return 
      */  
     public static boolean replace(String key, Object value)  
@@ -159,14 +242,14 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * ½öµ±¼üÒÑ¾­´æÔÚÊ±£¬replace ÃüÁî²Å»áÌæ»»»º´æÖĞµÄ¼ü¡£ 
+     * ä»…å½“é”®å·²ç»å­˜åœ¨æ—¶ï¼Œreplace å‘½ä»¤æ‰ä¼šæ›¿æ¢ç¼“å­˜ä¸­çš„é”®ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     public static boolean replace(String key, Object value, int expire)  
@@ -175,14 +258,14 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * ½öµ±¼üÒÑ¾­´æÔÚÊ±£¬replace ÃüÁî²Å»áÌæ»»»º´æÖĞµÄ¼ü¡£ 
+     * ä»…å½“é”®å·²ç»å­˜åœ¨æ—¶ï¼Œreplace å‘½ä»¤æ‰ä¼šæ›¿æ¢ç¼“å­˜ä¸­çš„é”®ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param value 
-     *            Öµ 
+     *            å€¼ 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     private static boolean replaceExp(String key, Object value, int expire)  
@@ -194,16 +277,16 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached replace·½·¨±¨´í£¬keyÖµ£º" + key + "\r\n" + exceptionWrite(e));  
+            MemcachedLog.writeLog("Memcached replaceæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
         }  
         return flag;  
     }  
   
     /** 
-     * get ÃüÁîÓÃÓÚ¼ìË÷ÓëÖ®Ç°Ìí¼ÓµÄ¼üÖµ¶ÔÏà¹ØµÄÖµ¡£ 
+     * get å‘½ä»¤ç”¨äºæ£€ç´¢ä¸ä¹‹å‰æ·»åŠ çš„é”®å€¼å¯¹ç›¸å…³çš„å€¼ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @return 
      */  
     public static Object get(String key)  
@@ -215,16 +298,16 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached get·½·¨±¨´í£¬keyÖµ£º" + key + "\r\n" + exceptionWrite(e));  
+            MemcachedLog.writeLog("Memcached getæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
         }  
         return obj;  
     }  
   
     /** 
-     * É¾³ı memcached ÖĞµÄÈÎºÎÏÖÓĞÖµ¡£ 
+     * åˆ é™¤ memcached ä¸­çš„ä»»ä½•ç°æœ‰å€¼ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @return 
      */  
     public static boolean delete(String key)  
@@ -233,12 +316,12 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * É¾³ı memcached ÖĞµÄÈÎºÎÏÖÓĞÖµ¡£ 
+     * åˆ é™¤ memcached ä¸­çš„ä»»ä½•ç°æœ‰å€¼ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     public static boolean delete(String key, int expire)  
@@ -247,12 +330,12 @@ public class MemcachedUtils {
     }  
   
     /** 
-     * É¾³ı memcached ÖĞµÄÈÎºÎÏÖÓĞÖµ¡£ 
+     * åˆ é™¤ memcached ä¸­çš„ä»»ä½•ç°æœ‰å€¼ã€‚ 
      *  
      * @param key 
-     *            ¼ü 
+     *            é”® 
      * @param expire 
-     *            ¹ıÆÚÊ±¼ä New Date(1000*10)£ºÊ®Ãëºó¹ıÆÚ 
+     *            è¿‡æœŸæ—¶é—´ New Date(1000*10)ï¼šåç§’åè¿‡æœŸ 
      * @return 
      */  
     private static boolean deleteExp(String key, int expire)  
@@ -264,13 +347,13 @@ public class MemcachedUtils {
         }  
         catch (Exception e)  
         {  
-            MemcachedLog.writeLog("Memcached delete·½·¨±¨´í£¬keyÖµ£º" + key + "\r\n" + exceptionWrite(e));  
+            MemcachedLog.writeLog("Memcached deleteæ–¹æ³•æŠ¥é”™ï¼Œkeyå€¼ï¼š" + key + "\r\n" + exceptionWrite(e));  
         }  
         return flag;  
     }  
   
     /** 
-     * ÇåÀí»º´æÖĞµÄËùÓĞ¼ü/Öµ¶Ô 
+     * æ¸…ç†ç¼“å­˜ä¸­çš„æ‰€æœ‰é”®/å€¼å¯¹ 
      *  
      * @return 
      */  
@@ -284,13 +367,13 @@ public class MemcachedUtils {
         catch (Exception e)  
         {  
         	flag=false;
-            MemcachedLog.writeLog("Memcached flashAll·½·¨±¨´í\r\n" + exceptionWrite(e));  
+            MemcachedLog.writeLog("Memcached flashAllæ–¹æ³•æŠ¥é”™\r\n" + exceptionWrite(e));  
         }  
         return flag;  
     }  
   
     /** 
-     * ·µ»ØÒì³£Õ»ĞÅÏ¢£¬StringÀàĞÍ 
+     * è¿”å›å¼‚å¸¸æ ˆä¿¡æ¯ï¼ŒStringç±»å‹ 
      *  
      * @param e 
      * @return 
@@ -307,7 +390,7 @@ public class MemcachedUtils {
     /** 
      *  
      * @ClassName: MemcachedLog 
-     * @Description: MemcachedÈÕÖ¾¼ÇÂ¼ 
+     * @Description: Memcachedæ—¥å¿—è®°å½• 
      *  
      */  
     private static class MemcachedLog  
@@ -316,12 +399,12 @@ public class MemcachedUtils {
         private final static String LINUX_MEMCACHED_LOG = "/usr/local/logs/memcached.log";  
         private static FileWriter fileWriter;  
         private static BufferedWriter logWrite;  
-        // »ñÈ¡PID£¬¿ÉÒÔÕÒµ½¶ÔÓ¦µÄJVM½ø³Ì  
+        // è·å–PIDï¼Œå¯ä»¥æ‰¾åˆ°å¯¹åº”çš„JVMè¿›ç¨‹  
         private final static RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();  
         private final static String PID = runtime.getName();  
   
         /** 
-         * ³õÊ¼»¯Ğ´ÈëÁ÷ 
+         * åˆå§‹åŒ–å†™å…¥æµ 
          */  
         static  
         {  
@@ -340,35 +423,35 @@ public class MemcachedUtils {
             }  
             catch (IOException e)  
             {  
-                logger.error("memcached ÈÕÖ¾³õÊ¼»¯Ê§°Ü", e);  
+                logger.error("memcached æ—¥å¿—åˆå§‹åŒ–å¤±è´¥", e);  
                 closeLogStream();  
             }  
         }  
   
         /** 
-         * Ğ´ÈëÈÕÖ¾ĞÅÏ¢ 
+         * å†™å…¥æ—¥å¿—ä¿¡æ¯ 
          *  
          * @param content 
-         *            ÈÕÖ¾ÄÚÈİ 
+         *            æ—¥å¿—å†…å®¹ 
          */  
         public static void writeLog(String content)  
         {  
             try  
             {  
                 logWrite.write("[" + PID + "] " + "- ["  
-                        + new SimpleDateFormat("yyyyÄê-MMÔÂ-ddÈÕ hhÊ±:mm·Ö:ssÃë").format(new Date().getTime()) + "]\r\n"  
+                        + new SimpleDateFormat("yyyyå¹´-MMæœˆ-ddæ—¥ hhæ—¶:mmåˆ†:ssç§’").format(new Date().getTime()) + "]\r\n"  
                         + content);  
                 logWrite.newLine();  
                 logWrite.flush();  
             }  
             catch (IOException e)  
             {  
-                logger.error("memcached Ğ´ÈëÈÕÖ¾ĞÅÏ¢Ê§°Ü", e);  
+                logger.error("memcached å†™å…¥æ—¥å¿—ä¿¡æ¯å¤±è´¥", e);  
             }  
         }  
   
         /** 
-         * ¹Ø±ÕÁ÷ 
+         * å…³é—­æµ 
          */  
         private static void closeLogStream()  
         {  
@@ -379,7 +462,7 @@ public class MemcachedUtils {
             }  
             catch (IOException e)  
             {  
-                logger.error("memcached ÈÕÖ¾¶ÔÏó¹Ø±ÕÊ§°Ü", e);  
+                logger.error("memcached æ—¥å¿—å¯¹è±¡å…³é—­å¤±è´¥", e);  
             }  
         }  
     }  
